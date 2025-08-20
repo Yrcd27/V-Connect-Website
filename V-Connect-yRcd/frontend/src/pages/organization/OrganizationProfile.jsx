@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { FiSave, FiEdit, FiMapPin, FiGlobe, FiCheckCircle, FiInfo, FiUser } from 'react-icons/fi';
+import { FiSave, FiEdit, FiMapPin, FiGlobe, FiCheckCircle, FiInfo, FiUser, FiX } from 'react-icons/fi';
 import OrganizationSidebar from './OrganizationSidebar';
 
 const OrganizationProfile = () => {
@@ -15,7 +15,12 @@ const OrganizationProfile = () => {
     name: '',
     email: ''
   });
-  const [isEditing, setIsEditing] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    description: '',
+    address: '',
+    website: ''
+  });
+  const [showEditModal, setShowEditModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -33,6 +38,17 @@ const OrganizationProfile = () => {
     
     fetchProfile();
   }, [navigate]);
+  
+  // Initialize edit form data when profile data is loaded or edit modal is opened
+  useEffect(() => {
+    if (showEditModal) {
+      setEditFormData({
+        description: profile.description || '',
+        address: profile.address || '',
+        website: profile.website || ''
+      });
+    }
+  }, [showEditModal, profile]);
   
   // Function to decode JWT token
   const decodeJWT = (token) => {
@@ -116,9 +132,9 @@ const OrganizationProfile = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          description: profile.description,
-          address: profile.address,
-          website: profile.website,
+          description: editFormData.description,
+          address: editFormData.address,
+          website: editFormData.website,
           is_verified: profile.is_verified
         })
       });
@@ -127,7 +143,16 @@ const OrganizationProfile = () => {
         throw new Error('Failed to update profile');
       }
       
-      setIsEditing(false);
+      // Update the profile data with the new values
+      setProfile({
+        ...profile,
+        description: editFormData.description,
+        address: editFormData.address,
+        website: editFormData.website
+      });
+      
+      // Close the modal
+      setShowEditModal(false);
       setSaveSuccess(true);
       
       // Show success message for 3 seconds
@@ -154,10 +179,10 @@ const OrganizationProfile = () => {
               )}
             </div>
             
-            {/* Edit button only appears when not loading and not editing */}
-            {!isLoading && !isEditing && (
+            {/* Edit button only appears when not loading */}
+            {!isLoading && (
               <button 
-                onClick={() => setIsEditing(true)}
+                onClick={() => setShowEditModal(true)}
                 className="bg-primary text-white py-1 sm:py-2 px-3 sm:px-4 text-sm sm:text-base rounded-md hover:bg-primary/90 transition-colors flex items-center w-max"
               >
                 <FiEdit className="mr-1 sm:mr-2" /> Edit Profile
@@ -188,69 +213,6 @@ const OrganizationProfile = () => {
               </div>
             )}
             
-            {isEditing ? (
-              <form onSubmit={handleUpdateProfile} className="p-4 sm:p-6">
-                <div className="grid grid-cols-1 gap-4 sm:gap-6">
-                  <div className="mb-3 sm:mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Organization Description
-                    </label>
-                    <textarea 
-                      value={profile.description || ''}
-                      onChange={e => setProfile({...profile, description: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-primary/50 text-sm sm:text-base"
-                      rows={window.innerWidth < 640 ? "4" : "6"}
-                      placeholder="Describe your organization, its mission, values, and impact..."
-                    />
-                    <p className="text-xs text-gray-500 mt-1">This description will be visible to volunteers and donors.</p>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                      <FiMapPin className="mr-2 text-yellow-500" /> 
-                      Organization Address
-                    </label>
-                    <textarea 
-                      value={profile.address || ''}
-                      onChange={e => setProfile({...profile, address: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-primary/50"
-                      rows="3"
-                      placeholder="Enter your physical address..."
-                    />
-                  </div>
-                  
-                  <div className="mb-6">
-                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                      <FiGlobe className="mr-2 text-green-500" /> 
-                      Website URL
-                    </label>
-                    <input 
-                      type="url"
-                      value={profile.website || ''}
-                      onChange={e => setProfile({...profile, website: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-primary/50"
-                      placeholder="https://www.example.org"
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex flex-wrap justify-end gap-2">
-                  <button 
-                    type="button"
-                    onClick={() => setIsEditing(false)}
-                    className="bg-gray-200 text-gray-700 py-1 sm:py-2 px-3 sm:px-4 text-sm sm:text-base rounded-md hover:bg-gray-300 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit"
-                    className="bg-primary text-white py-1 sm:py-2 px-3 sm:px-4 text-sm sm:text-base rounded-md hover:bg-primary/90 transition-colors flex items-center"
-                  >
-                    <FiSave className="mr-1 sm:mr-2" /> Save Changes
-                  </button>
-                </div>
-              </form>
-            ) : (
               <div className="p-4 sm:p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <div className="bg-white rounded-lg shadow p-4 sm:p-6">
@@ -335,8 +297,86 @@ const OrganizationProfile = () => {
                   </div>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+          
+          {/* Edit Profile Modal */}
+          {showEditModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+              <div className="bg-white rounded-xl shadow-lg w-full max-w-lg mx-auto my-8 overflow-hidden">
+                <div className="flex justify-between items-center p-4 sm:p-6 border-b sticky top-0 bg-white z-10">
+                  <h3 className="text-lg font-bold">Edit Organization Profile</h3>
+                  <button 
+                    onClick={() => setShowEditModal(false)}
+                    className="text-gray-500 hover:text-gray-700 text-xl ml-4"
+                  >
+                    <FiX />
+                  </button>
+                </div>
+                
+                <form onSubmit={handleUpdateProfile} className="p-4 sm:p-6">
+                  <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                    <div className="mb-3 sm:mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Organization Description
+                      </label>
+                      <textarea 
+                        value={editFormData.description}
+                        onChange={e => setEditFormData({...editFormData, description: e.target.value})}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-primary/50 text-sm sm:text-base"
+                        rows={window.innerWidth < 640 ? "4" : "6"}
+                        placeholder="Describe your organization, its mission, values, and impact..."
+                      />
+                      <p className="text-xs text-gray-500 mt-1">This description will be visible to volunteers and donors.</p>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <FiMapPin className="mr-2 text-yellow-500" /> 
+                        Organization Address
+                      </label>
+                      <textarea 
+                        value={editFormData.address}
+                        onChange={e => setEditFormData({...editFormData, address: e.target.value})}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-primary/50"
+                        rows="3"
+                        placeholder="Enter your physical address..."
+                      />
+                    </div>
+                    
+                    <div className="mb-6">
+                      <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <FiGlobe className="mr-2 text-green-500" /> 
+                        Website URL
+                      </label>
+                      <input 
+                        type="url"
+                        value={editFormData.website}
+                        onChange={e => setEditFormData({...editFormData, website: e.target.value})}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-primary/50"
+                        placeholder="https://www.example.org"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <button 
+                      type="button"
+                      onClick={() => setShowEditModal(false)}
+                      className="bg-gray-200 text-gray-700 py-1 sm:py-2 px-3 sm:px-4 text-sm sm:text-base rounded-md hover:bg-gray-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit"
+                      className="bg-primary text-white py-1 sm:py-2 px-3 sm:px-4 text-sm sm:text-base rounded-md hover:bg-primary/90 transition-colors flex items-center"
+                    >
+                      <FiSave className="mr-1 sm:mr-2" /> Save Changes
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
           )}
         </div>
       </OrganizationSidebar>

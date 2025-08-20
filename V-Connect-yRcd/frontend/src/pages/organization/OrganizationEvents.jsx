@@ -780,7 +780,7 @@ const OrganizationEvents = () => {
                     <p className="text-gray-500">No applications received yet.</p>
                   ) : (
                     <>
-                      {/* Pending Applications */}
+                        {/* Pending Applications */}
                       <div className="mb-6">
                         <h5 className="text-sm font-medium mb-2">Pending Applications</h5>
                         {eventApplications.filter(app => app.status === 'pending').length === 0 ? (
@@ -825,8 +825,7 @@ const OrganizationEvents = () => {
                           </div>
                         )}
                       </div>
-                      
-                      {/* Approved Applications */}
+                                            {/* Approved Applications */}
                       <div className="mb-6">
                         <h5 className="text-sm font-medium mb-2">Approved Volunteers</h5>
                         {eventApplications.filter(app => app.status === 'approved' || app.status === 'accepted').length === 0 ? (
@@ -846,7 +845,7 @@ const OrganizationEvents = () => {
                                 {eventApplications
                                   .filter(app => app.status === 'approved' || app.status === 'accepted')
                                   .map(app => (
-                                    <tr key={app.application_id} className="transition-colors hover:bg-gray-50 bg-green-50">
+                                    <tr key={app.application_id} className="transition-colors hover:bg-green-50 bg-gray-50">
                                       <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{app.volunteer_id}</td>
                                       <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{app.volunteer_name}</td>
                                       <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{app.applied_at ? new Date(app.applied_at).toLocaleDateString() : 'N/A'}</td>
@@ -861,7 +860,7 @@ const OrganizationEvents = () => {
                                           }}
                                           className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-xs hover:bg-blue-200 transition-colors mr-2"
                                         >
-                                          Give Feedback
+                                          Feedback
                                         </button>
                                         <button
                                           onClick={() => handleUpdateApplicationStatus(selectedEvent.event_id, app.application_id, 'rejected')}
@@ -898,7 +897,7 @@ const OrganizationEvents = () => {
                                 {eventApplications
                                   .filter(app => app.status === 'rejected')
                                   .map(app => (
-                                    <tr key={app.application_id} className="transition-colors hover:bg-gray-50 bg-red-50">
+                                    <tr key={app.application_id} className="transition-colors hover:bg-red-50 bg-gray-50">
                                       <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{app.volunteer_id}</td>
                                       <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{app.volunteer_name}</td>
                                       <td className="py-2 px-2 sm:px-4 text-xs sm:text-sm">{app.applied_at ? new Date(app.applied_at).toLocaleDateString() : 'N/A'}</td>
