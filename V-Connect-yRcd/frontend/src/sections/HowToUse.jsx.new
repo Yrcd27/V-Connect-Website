@@ -1,0 +1,435 @@
+import { motion, AnimatePresence } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
+import { FiUserPlus, FiSearch, FiCalendar, FiCheck, FiArrowRight } from 'react-icons/fi'
+
+const HowToUse = () => {
+  const [ref, inView] = useInView({
+    triggerOnce: false,
+    threshold: 0.1,
+  })
+  
+  // Define staggered animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  }
+  
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 300, damping: 24 }
+    }
+  }
+
+  const steps = [
+    {
+      icon: <FiUserPlus className="text-white text-3xl" />,
+      title: "Create an Account",
+      description: "Sign up as a volunteer or register your organization in minutes.",
+      color: "bg-primary"
+    },
+    {
+      icon: <FiSearch className="text-white text-3xl" />,
+      title: "Find Opportunities",
+      description: "Browse public events or join an organization to access exclusive opportunities.",
+      color: "bg-accent"
+    },
+    {
+      icon: <FiCalendar className="text-white text-3xl" />,
+      title: "Participate in Events",
+      description: "Apply to events that match your interests and availability.",
+      color: "bg-primary"
+    },
+    {
+      icon: <FiCheck className="text-white text-3xl" />,
+      title: "Track Your Impact",
+      description: "Earn badges, track hours, and build your volunteer portfolio.",
+      color: "bg-accent"
+    }
+  ]
+
+  return (
+    <section id="how-to-use" className="py-20 scroll-section">
+      <div className="container mx-auto px-4">
+        <motion.div
+          ref={ref}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h2 className="section-title">How to Use <span className="text-primary">V-Connect</span></h2>
+          <p className="section-subtitle">
+            Getting started with V-Connect is easy. Follow these simple steps to begin your volunteering journey
+            or to enhance your organization's volunteer management.
+          </p>
+        </motion.div>
+
+        {/* Steps */}
+        <div className="mt-16 relative">
+          {/* Connection Line */}
+          <motion.div 
+            className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -translate-y-1/2 z-0"
+            initial={{ width: "0%" }}
+            whileInView={{ width: "100%" }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+          />
+          
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: false, amount: 0.2 }}
+          >
+            {steps.map((step, index) => (
+              <motion.div
+                key={index}
+                className="relative z-10"
+                variants={itemVariants}
+              >
+                <div className="flex flex-col items-center bg-white rounded-xl p-6 hover:shadow-xl transition-shadow duration-300">
+                  <div className="relative">
+                    <motion.div 
+                      className={`${step.color} w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-lg`}
+                      whileHover={{ 
+                        scale: 1.15,
+                        rotate: [0, -5, 5, -5, 0],
+                        transition: { 
+                          rotate: { repeat: 0, duration: 0.5 },
+                          scale: { duration: 0.2 }
+                        }
+                      }}
+                    >
+                      {step.icon}
+                    </motion.div>
+                    <motion.div
+                      className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 flex items-center justify-center border-2 border-gray-200 font-bold text-primary"
+                      initial={{ opacity: 0, scale: 0 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: false }}
+                      transition={{ delay: 0.4 + index * 0.2, duration: 0.3, type: "spring" }}
+                    >
+                      {index + 1}
+                    </motion.div>
+                  </div>
+                  <motion.h3 
+                    className="text-xl font-semibold mb-3 text-center"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: false }}
+                    transition={{ delay: 0.1 + index * 0.1, duration: 0.5 }}
+                  >
+                    {step.title}
+                  </motion.h3>
+                  <motion.p 
+                    className="text-gray-600 text-center"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: false }}
+                    transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
+                  >
+                    {step.description}
+                  </motion.p>
+                  
+                  {index < steps.length - 1 && (
+                    <motion.div 
+                      className="hidden lg:flex absolute -right-4 top-1/2 transform -translate-y-1/2 z-10"
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: false }}
+                      transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
+                    >
+                      <FiArrowRight className="text-primary text-2xl" />
+                    </motion.div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* User Types */}
+        <div className="mt-24">
+          <motion.h3
+            className="text-2xl font-bold text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ 
+              duration: 0.8,
+              type: "spring",
+              stiffness: 100
+            }}
+          >
+            Who Can Use <span className="text-primary">V-Connect</span>?
+          </motion.h3>
+          
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: false, amount: 0.2 }}
+          >
+            {/* Volunteers */}
+            <motion.div
+              className="bg-white rounded-xl shadow-md overflow-hidden h-full"
+              variants={itemVariants}
+              whileHover={{ 
+                y: -8,
+                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            >
+              <motion.div 
+                className="bg-primary h-2"
+                initial={{ width: "0%" }}
+                whileInView={{ width: "100%" }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
+              <motion.div 
+                className="p-8"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: false }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <motion.div 
+                  className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                >
+                  <FiUserPlus className="text-primary text-2xl" />
+                </motion.div>
+                
+                <h4 className="text-xl font-semibold mb-4 text-center">For Volunteers</h4>
+                
+                <ul className="space-y-4">
+                  {[
+                    "Browse and apply to public events",
+                    "Register with volunteer organizations",
+                    "Access private organization events",
+                    "Track volunteer hours and achievements",
+                    "Build a volunteer portfolio with badges"
+                  ].map((item, index) => (
+                    <motion.li 
+                      key={index} 
+                      className="flex items-start"
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: false }}
+                      transition={{ delay: 0.4 + index * 0.1, duration: 0.3 }}
+                    >
+                      <motion.span 
+                        className="text-primary mr-2 text-xl"
+                        whileHover={{ scale: 1.2 }}
+                      >•</motion.span>
+                      <span>{item}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+            </motion.div>
+
+            {/* Organizations */}
+            <motion.div
+              className="bg-white rounded-xl shadow-md overflow-hidden h-full"
+              variants={itemVariants}
+              whileHover={{ 
+                y: -8,
+                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            >
+              <motion.div 
+                className="bg-accent h-2"
+                initial={{ width: "0%" }}
+                whileInView={{ width: "100%" }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              />
+              <motion.div 
+                className="p-8"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: false }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <motion.div 
+                  className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                >
+                  <FiCalendar className="text-accent text-2xl" />
+                </motion.div>
+                
+                <h4 className="text-xl font-semibold mb-4 text-center">For Organizations</h4>
+                
+                <ul className="space-y-4">
+                  {[
+                    "Create and manage events",
+                    "Approve volunteer membership requests",
+                    "Create public or private events",
+                    "Create donation campaigns",
+                    "Showcase organization achievements"
+                  ].map((item, index) => (
+                    <motion.li 
+                      key={index} 
+                      className="flex items-start"
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: false }}
+                      transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
+                    >
+                      <motion.span 
+                        className="text-accent mr-2 text-xl"
+                        whileHover={{ scale: 1.2 }}
+                      >•</motion.span>
+                      <span>{item}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+            </motion.div>
+
+            {/* Admins */}
+            <motion.div
+              className="bg-white rounded-xl shadow-md overflow-hidden h-full"
+              variants={itemVariants}
+              whileHover={{ 
+                y: -8,
+                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            >
+              <motion.div 
+                className="bg-dark h-2"
+                initial={{ width: "0%" }}
+                whileInView={{ width: "100%" }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              />
+              <motion.div 
+                className="p-8"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: false }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                <motion.div 
+                  className="w-16 h-16 rounded-full bg-gray-800/10 flex items-center justify-center mx-auto mb-6"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                >
+                  <FiCheck className="text-gray-800 text-2xl" />
+                </motion.div>
+                
+                <h4 className="text-xl font-semibold mb-4 text-center">For Admins</h4>
+                
+                <ul className="space-y-4">
+                  {[
+                    "Approve volunteer platform registrations",
+                    "Approve event creation requests",
+                    "Award badges to volunteers",
+                    "Manage platform content",
+                    "Oversee platform operations"
+                  ].map((item, index) => (
+                    <motion.li 
+                      key={index} 
+                      className="flex items-start"
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: false }}
+                      transition={{ delay: 0.6 + index * 0.1, duration: 0.3 }}
+                    >
+                      <motion.span 
+                        className="text-dark mr-2 text-xl"
+                        whileHover={{ scale: 1.2 }}
+                      >•</motion.span>
+                      <span>{item}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* CTA */}
+        <motion.div
+          className="mt-16 text-center bg-gradient-to-r from-primary to-blue-700 text-white p-10 rounded-xl"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 0.7 }}
+          whileHover={{ 
+            boxShadow: "0 25px 50px -12px rgba(0, 90, 255, 0.25)",
+            scale: 1.01
+          }}
+        >
+          <motion.h3 
+            className="text-2xl md:text-3xl font-bold mb-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            Ready to Get Started?
+          </motion.h3>
+          <motion.p 
+            className="text-lg opacity-90 mb-8 max-w-xl mx-auto"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            Join our community of volunteers and organizations making a difference in communities around the world.
+          </motion.p>
+          <motion.div 
+            className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: false }}
+          >
+            <motion.button 
+              className="bg-white text-primary hover:bg-gray-100 py-3 px-8 rounded-md font-medium transition-colors duration-300"
+              whileHover={{ 
+                scale: 1.05, 
+                boxShadow: "0 10px 15px -3px rgba(255, 255, 255, 0.2)"
+              }}
+              whileTap={{ scale: 0.95 }}
+              variants={itemVariants}
+            >
+              Sign Up Now
+            </motion.button>
+            <motion.button 
+              className="border-2 border-white bg-transparent hover:bg-white/10 py-3 px-8 rounded-md font-medium transition-colors duration-300"
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: "0 10px 15px -3px rgba(255, 255, 255, 0.1)"
+              }}
+              whileTap={{ scale: 0.95 }}
+              variants={itemVariants}
+            >
+              Learn More
+            </motion.button>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default HowToUse;

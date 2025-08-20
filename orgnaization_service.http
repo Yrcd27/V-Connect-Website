@@ -1,0 +1,70 @@
+http://localhost:8080/api/organizations/profile/{id}
+
+HTTP/1.1 403  - Forbidden
+server: Jetty(12.0.16)
+date: Wed, 13 Aug 2025 07:42:00 GMT
+vary: Accept-Encoding
+x-content-type-options: nosniff
+set-cookie: JSESSIONID.d1891784=node01ubl0vvgrw12016vvhlt4b5bd22.node0; Path=/; HttpOnly
+expires: Thu, 01 Jan 1970 00:00:00 GMT
+content-type: text/html;charset=utf-8
+x-hudson: 1.395
+x-jenkins: 2.479.3
+x-jenkins-session: 6e768800
+connection: close
+###
+http://localhost:8080/api/organizations/profile/{id}
+
+HTTP/1.1 403  - Forbidden
+server: Jetty(12.0.16)
+date: Wed, 13 Aug 2025 07:42:05 GMT
+vary: Accept-Encoding
+x-content-type-options: nosniff
+content-type: text/html;charset=utf-8
+x-hudson: 1.395
+x-jenkins: 2.479.3
+x-jenkins-session: 6e768800
+connection: close
+###
+http://localhost:8080/api/organizations/events/{id}
+
+
+
+HTTP/1.1 403  - Forbidden
+server: Jetty(12.0.16)
+date: Wed, 13 Aug 2025 07:42:09 GMT
+vary: Accept-Encoding
+x-content-type-options: nosniff
+content-type: text/html;charset=utf-8
+x-hudson: 1.395
+x-jenkins: 2.479.3
+x-jenkins-session: 6e768800
+connection: close
+###
+http://localhost:8080/api/organizations/events/{id}
+
+
+
+HTTP/1.1 403  - Forbidden
+server: Jetty(12.0.16)
+date: Wed, 13 Aug 2025 07:42:11 GMT
+vary: Accept-Encoding
+x-content-type-options: nosniff
+content-type: text/html;charset=utf-8
+x-hudson: 1.395
+x-jenkins: 2.479.3
+x-jenkins-session: 6e768800
+connection: close
+###
+http://localhost:8080/api/organizations/events/123
+
+HTTP/1.1 403  - Forbidden
+server: Jetty(12.0.16)
+date: Wed, 13 Aug 2025 07:42:47 GMT
+vary: Accept-Encoding
+x-content-type-options: nosniff
+content-type: text/html;charset=utf-8
+x-hudson: 1.395
+x-jenkins: 2.479.3
+x-jenkins-session: 6e768800
+connection: close
