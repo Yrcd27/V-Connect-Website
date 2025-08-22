@@ -36,6 +36,11 @@ const OrganizationEvents = () => {
     hours_worked: 1
   });
   
+  // State for feedback management
+  const [existingFeedback, setExistingFeedback] = useState(null);
+  const [isEditingFeedback, setIsEditingFeedback] = useState(false);
+  const [isFetchingFeedback, setIsFetchingFeedback] = useState(false);
+  
   useEffect(() => {
     // Check if user is logged in and is an organization
     const token = localStorage.getItem('token');
@@ -321,14 +326,68 @@ const OrganizationEvents = () => {
     }
   };
   
+  // Fetch feedback for a volunteer
+  const fetchVolunteerFeedback = async (eventId, volunteerId) => {
+    setIsFetchingFeedback(true);
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`http://localhost:9000/api/org/feedback/${volunteerId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Find feedback for the current event
+        const feedbackForEvent = data.find(fb => fb.event_id === eventId);
+        
+        if (feedbackForEvent) {
+          setExistingFeedback(feedbackForEvent);
+          setFeedbackForm({
+            rating: feedbackForEvent.rating,
+            comment: feedbackForEvent.comment || '',
+            hours_worked: feedbackForEvent.hours_worked
+          });
+          setIsEditingFeedback(true);
+        } else {
+          setExistingFeedback(null);
+          setFeedbackForm({
+            rating: 5,
+            comment: '',
+            hours_worked: 1
+          });
+          setIsEditingFeedback(false);
+        }
+      } else {
+        setExistingFeedback(null);
+        setIsEditingFeedback(false);
+      }
+    } catch (error) {
+      console.error('Error fetching feedback:', error);
+      setError('Failed to fetch feedback information.');
+      setExistingFeedback(null);
+      setIsEditingFeedback(false);
+    } finally {
+      setIsFetchingFeedback(false);
+    }
+  };
+
   const handleSubmitFeedback = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
       const organizationId = localStorage.getItem('user_id');
       
-      const response = await fetch('/api/org/feedback', {
-        method: 'POST',
+      // Determine if we're creating or updating feedback
+      const method = isEditingFeedback ? 'PUT' : 'POST';
+      const url = isEditingFeedback 
+        ? `http://localhost:9000/api/org/feedback/${existingFeedback.feedback_id}`
+        : 'http://localhost:9000/api/org/feedback';
+      
+      const response = await fetch(url, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -347,6 +406,9 @@ const OrganizationEvents = () => {
         throw new Error('Failed to submit feedback');
       }
       
+      // Set success message
+      setSuccessMessage(isEditingFeedback ? 'Feedback updated successfully!' : 'Feedback submitted successfully!');
+      
       // Close feedback modal and reset form
       setShowFeedbackModal(false);
       setFeedbackForm({
@@ -354,6 +416,15 @@ const OrganizationEvents = () => {
         comment: '',
         hours_worked: 1
       });
+      
+      // Clear existing feedback state
+      setExistingFeedback(null);
+      setIsEditingFeedback(false);
+      
+      // Auto-hide success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
       
     } catch (error) {
       console.error('Error submitting feedback:', error);
@@ -856,6 +927,8 @@ const OrganizationEvents = () => {
                                               volunteer_id: app.volunteer_id,
                                               name: app.volunteer_name || `Volunteer #${app.volunteer_id}`
                                             });
+                                            // Fetch any existing feedback before showing the modal
+                                            fetchVolunteerFeedback(selectedEvent.event_id, app.volunteer_id);
                                             setShowFeedbackModal(true);
                                           }}
                                           className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-xs hover:bg-blue-200 transition-colors mr-2"
@@ -929,7 +1002,13 @@ const OrganizationEvents = () => {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
             <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-auto my-8 overflow-hidden">
               <div className="flex justify-between items-center p-4 sm:p-6 border-b sticky top-0 bg-white z-10">
-                <h3 className="text-lg font-bold truncate">{selectedVolunteer.name ? `Feedback for ${selectedVolunteer.name}` : "Provide Feedback"}</h3>
+                <h3 className="text-lg font-bold truncate">
+                  {isEditingFeedback 
+                    ? `Edit Feedback for ${selectedVolunteer.name}` 
+                    : selectedVolunteer.name 
+                      ? `Provide Feedback for ${selectedVolunteer.name}` 
+                      : "Provide Feedback"}
+                </h3>
                 <button 
                   onClick={() => setShowFeedbackModal(false)}
                   className="text-gray-500 hover:text-gray-700 text-xl ml-4"
@@ -938,7 +1017,12 @@ const OrganizationEvents = () => {
                 </button>
               </div>
               
-              <form onSubmit={handleSubmitFeedback} className="p-4 sm:p-6">
+              {isFetchingFeedback ? (
+                <div className="p-4 sm:p-6 flex justify-center items-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmitFeedback} className="p-4 sm:p-6">
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Rating (1-5)
@@ -996,10 +1080,11 @@ const OrganizationEvents = () => {
                     type="submit"
                     className="bg-primary text-white py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
                   >
-                    Submit Feedback
+                    {isEditingFeedback ? 'Update Feedback' : 'Submit Feedback'}
                   </button>
                 </div>
               </form>
+              )}
             </div>
           </div>
         )}

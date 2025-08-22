@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMail, FiLock, FiUser, FiPhone, FiMapPin, FiGlobe } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
 // Import the login and signup images
 import loginImg from '../assets/loginimg.png';
@@ -236,11 +234,8 @@ const Login = () => {
   };
 
   return (
-    <>
-      <Navbar />
-      
-      <main className="pt-20 min-h-screen flex flex-col">
-        <div className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <main className="min-h-screen flex flex-col">
+      <div className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
           <div className="max-w-6xl w-full bg-white rounded-xl overflow-hidden shadow-lg">
             <div className="flex flex-col md:flex-row">
               {/* Left side - Image */}
@@ -712,10 +707,7 @@ const Login = () => {
             </div>
           </div>
         </div>
-      </main>
-      
-      <Footer />
-    </>
+    </main>
   );
 };
 

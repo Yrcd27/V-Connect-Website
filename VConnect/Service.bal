@@ -55,15 +55,13 @@ listener http:Listener mainListener = new (9000);
 
 @http:ServiceConfig {
     cors: {
+        // must be a specific origin if credentials are allowed
         allowOrigins: ["http://localhost:5173"],
         allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        // allow all common request headers from browsers (incl. Authorization)
-        allowHeaders: ["*"],
-        // if you use cookies/auth headers and need them sent
+        // list the exact headers your frontend sends
+        allowHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
         allowCredentials: true,
-        // optional but nice: cache preflight for a day
         maxAge: 86400,
-        // optional: expose headers you return (e.g., Location)
         exposeHeaders: ["Location", "Content-Length"]
     }
 }
